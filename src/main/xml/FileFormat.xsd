@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="FileFormat">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="RecordFormat" type="RecordFormat" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="ConversionTable" type="xsd:string"/>
+			<xsd:attribute name="distinguishFieldSize" type="xsd:integer"/>
+			<xsd:attribute name="newLineSize" type="xsd:integer"/>
+			<xsd:attribute name="dataFileImplementation" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="RecordFormat">
+		<xsd:complexContent>
+			<xsd:extension base="FieldsList">
+				<xsd:attribute name="distinguishFieldValue" type="xsd:string"/>
+				<xsd:attribute name="cobolRecordName" type="xsd:string"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="FieldsGroup">
+		<xsd:complexContent>
+			<xsd:extension base="FieldsList">
+				<xsd:attribute name="Name" type="xsd:string"/>
+				<xsd:attribute name="Occurs" type="xsd:integer"/>
+				<xsd:attribute name="DependingOn" type="xsd:string"/>
+				<xsd:attribute name="Redefined" type="xsd:boolean"/>
+				<xsd:attribute name="Redefines" type="xsd:string"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="FieldsList">
+		<xsd:choice maxOccurs="unbounded">
+			<xsd:element name="FieldFormat" type="FieldFormat" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FieldsGroup" type="FieldsGroup" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="FieldFormat">
+		<xsd:attribute name="Name" type="xsd:string"/>
+		<xsd:attribute name="Occurs" type="xsd:integer"/>
+		<xsd:attribute name="DependingOn" type="xsd:string"/>
+		<xsd:attribute name="Redefined" type="xsd:boolean"/>
+		<xsd:attribute name="Redefines" type="xsd:string"/>
+		<xsd:attribute name="Size" type="xsd:integer"/>
+		<xsd:attribute name="Type" type="xsd:string"/>
+		<xsd:attribute name="Decimal" type="xsd:integer"/>
+		<xsd:attribute name="Signed" type="xsd:boolean"/>
+		<xsd:attribute name="ImpliedDecimal" type="xsd:boolean"/>
+		<xsd:attribute name="Value" type="xsd:string"/>
+		<xsd:attribute name="Picture" type="xsd:string"/>
+	</xsd:complexType>
+</xsd:schema>

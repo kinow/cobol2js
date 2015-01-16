@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="cobol2j">
+  <bannerLeft>
+    <name>cobol2j banner</name>
+    <src>images/ebcdic.png</src>
+    <href>http://cobol2j.sf.net</href>
+  </bannerLeft>
+  <poweredBy>
+    <logo name="SourceForge.net" href="http://www.sourceforge.net"
+          img="http://sflogo.sourceforge.net/sflogo.php?group_id=156330&amp;type=2"/>
+  </poweredBy>
+  <body>
+
+    <menu name="Start">
+    	<item name="Manual 1.5" href="/manual.html"/>
+	<item name="Manual 1.4" href="/manual-1.4.html"/>
+	<item name="Downloads" href="http://sourceforge.net/project/platformdownload.php?group_id=156330"/>
+	<item name="Forum" href="http://sourceforge.net/forum/forum.php?forum_id=524917"/>
+	<item name="Tracker" href="http://sourceforge.net/tracker/?group_id=156330"/>
+    </menu>
+
+    <menu ref="reports"/>
+
+  </body>
+</project>

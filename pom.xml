@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.cobol2j</groupId>
+	<artifactId>cobol2j</artifactId>
+	<version>1.5.4</version>
+	<packaging>jar</packaging>
+	<name>cobol2j - Cobol and RPG data reader and converter</name>
+	<description>cobol2j reads COBOL or RPG EBCDIC or ASCII flat data files imported from mainframes, AS/400 or Baby/36 environment. Packed decimal, zoned or packed date fields decoding included. Default conversion tables provided.</description>
+	<url>http://cobol2j.sf.net</url>
+	<issueManagement>
+		<system>sf.net issue tracking system</system>
+		<url>http://sourceforge.net/tracker/?group_id=156330</url>
+	</issueManagement>
+	
+	<developers>
+		<developer>
+			<name>Pawel Maczka</name>
+			<email>pawel.maczka@gmail.com</email>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+	
+	<licenses>
+		<license>
+			<name>GNU Library or Lesser General Public License (LGPL)</name>
+			<url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.4</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.8.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.1-FINAL</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>cb2xml</groupId>
+			<artifactId>cb2xml</artifactId>
+			<version>0.94</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/cb2xml.jar</systemPath>
+		</dependency>
+
+		<!-- JAXB -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.2</version>
+		</dependency>
+	</dependencies>
+	
+	<scm>
+		<connection>scm:cvs:pserver:anonymous:@cobol2j.cvs.sourceforge.net:/cvsroot/cobol2j:cobol2j</connection>
+		<url>http://cobol2j.cvs.sourceforge.net/cobol2j/</url>
+	</scm>
+	<reporting>
+		<plugins>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.7</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
+				<version>2.0-beta-1</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<targetjdk>1.4</targetjdk>
+					<rulesets>
+						<ruleset>/rulesets/basic.xml</ruleset>
+						<ruleset>/rulesets/controversial.xml</ruleset>
+					</rulesets>
+					<format>xml</format>
+					<linkXref>true</linkXref>
+					<sourceEncoding>utf-8</sourceEncoding>
+					<minimumTokens>100</minimumTokens>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.3</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>changes-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jalopy-maven-plugin</artifactId>
+				<version>1.0-alpha-1</version>
+				<configuration>
+					<convention>myjalopy.xml</convention>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.7.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<generatePackage>net.sf.cobol2j</generatePackage>
+					<schemaDirectory>src/main/xml</schemaDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<distributionManagement>
+		<site>
+			<id>website</id>
+			<url>scp://shell.sourceforge.net/home/groups/c/co/cobol2j/htdocs/</url>
+		</site>
+	</distributionManagement>
+</project>

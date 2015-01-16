@@ -1,0 +1,31 @@
+--docs
+new programatic example
+xc2j example in manual
+jsf example
+
+--code
+change types "7" and "8" ( little endian ) to "1" and "2" and to be 
+	dependent on "dataFileImplementation"
+new xc2j parameter - skip 1st record ( often 1st line is a header ) also last?
+autocorrection / autodetection for EOL
+smart record/group detection
+new field layout parameter - omit/skip/ignore exception ( in case we have data type identification trouble with one field )
+
+--directions
+gui with live data view - i.e. for file definition tuning
+online data connection to host computers ( z or i )
+
+
+my preffered dev cycle:
+cvs -d :pserver:anonymomus@cobol2j.cvs.sourceforge.net:/cvsroot/cobol2j co cobol2j
+cd cobol2j
+-------change code
+mvn package
+-------change site
+mvn site
+mvn site:deploy
+
+- cb2xml - local maven repo install instruction
+-- download the latest ( 94 ) version from sf.net
+-- unzip in a folder and from that folder issue:
+-- mvn install:install-file -DgroupId=cb2xml -DartifactId=cb2xml -Dversion=0.94 -Dpackaging=jar -Dfile=lib/cb2xml.jar

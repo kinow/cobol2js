@@ -1,0 +1,47 @@
+<document>
+  <properties>
+    <title>Changes</title>
+    <author email="p4w3l@users.sourceforge.net">Pawel Maczka</author>
+  </properties>
+  <body>
+  <release version="1.5.2" date="2008-12-27" description="Improved features release">
+<action dev="p4w3l" type="add">
+		new dat2dat bat/sh command. Can convert EBCDIC to ASCII without loose of binary fields. It can also convert data types to other types if used wise.
+	</action>
+	<action dev="p4w3l" type="add">
+		New T - "transparent" type. Returns any Cobol type as it is represented in file in binary format. Requires proper size setting.
+	</action>
+  	<action dev="p4w3l" type="update">
+		binary type (B) extended to parse and write all possible values of BINARY, COMP or COMP-4 Cobol types.
+	</action>
+  	<action dev="p4w3l" type="add">
+		*nix shell equivalents of bat files.
+	</action>
+  	<action dev="p4w3l" type="add">
+		New rich error messages instead of NumberFormatException.
+	</action>
+  </release>
+  <release version="1.5" date="2008-11-01" description="alotofchanges">
+      <action dev="p4w3l" type="add">
+        All xml processing delegated to JAXB; new xc2j parameter - cobol implementation;
+		xc2j schema extended - Signed, ImpliedDeciomal, Picture. Some other attributes name changed;
+		cobol2j conversion tables replaced by java charsets ( Cp037, Cp437 or Cp1047 );
+		FieldFormat.java and company replaced with xjc classes based on FileFormat.xsd;
+		Hex classes, main in RecordSet and dat2hex.bat removed
+      </action>
+      <action dev="p4w3l" type="add">
+        since jaxb is required and it requires java 1.5 - cobol2j requires java 1.5 ( J2SE 5.0 ) as minimum Java version
+      </action>
+    </release>
+
+    <release version="1.4" date="" description="">
+      <action dev="p4w3l" type="fix">
+        bug in Dat2xls - cellNr changed from immutable Integer to MutableInt from Apache Commons Lang;
+		bug in reading zoned format - NumberFormatException;
+		new xsd schema - now matches cobol2j java types - preparation to jaxb;
+		bug in Dat2xls - cellNr changed from immutable Integer to MutableInt from Apache Commons Lang
+      </action>
+    </release>
+  </body>
+</document>
+

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FileFormat ConversionTable="Cp037"
+  dataFileImplementation="IBM i or z System" distinguishFieldSize="0" newLineSize="0">
+  <RecordFormat cobolRecordName="PATIENT-TREATMENTS" distinguishFieldValue="0">
+    <FieldFormat Decimal="0" DependingOn="" Name="PATIENT-NAME"
+      Occurs="1" Picture="X(30)" Size="30" Type="X" Value=""/>
+    <FieldFormat Decimal="0" DependingOn="" ImpliedDecimal="true"
+      Name="PATIENT-SS-NUMBER" Occurs="1" Picture="9(9)" Signed="false"
+      Size="9" Type="9" Value=""/>
+    <FieldFormat Decimal="0" DependingOn="" ImpliedDecimal="true"
+      Name="NUMBER-OF-TREATMENTS" Occurs="1" Picture="99" Signed="false"
+      Size="2" Type="3" Value=""/>
+    <FieldsGroup DependingOn="NUMBER-OF-TREATMENTS"
+      Name="TREATMENT-HISTORY" Occurs="50">
+      <FieldsGroup DependingOn="" Name="TREATMENT-DATE" Occurs="1">
+        <FieldFormat Decimal="0" DependingOn="" ImpliedDecimal="true"
+          Name="TREATMENT-DAY" Occurs="1" Picture="99" Signed="false"
+          Size="2" Type="9" Value=""/>
+        <FieldFormat Decimal="0" DependingOn="" ImpliedDecimal="true"
+          Name="TREATMENT-MONTH" Occurs="1" Picture="99" Signed="false"
+          Size="2" Type="9" Value=""/>
+        <FieldFormat Decimal="0" DependingOn="" ImpliedDecimal="true"
+          Name="TREATMENT-YEAR" Occurs="1" Picture="9(4)" Signed="false"
+          Size="4" Type="9" Value=""/>
+      </FieldsGroup>
+      <FieldFormat Decimal="0" DependingOn="" Name="TREATING-PHYSICIAN"
+        Occurs="1" Picture="X(30)" Size="30" Type="X" Value=""/>
+      <FieldFormat Decimal="0" DependingOn="" ImpliedDecimal="true"
+        Name="TREATMENT-CODE" Occurs="1" Picture="99" Signed="false"
+        Size="2" Type="9" Value=""/>
+    </FieldsGroup>
+  </RecordFormat>
+</FileFormat>

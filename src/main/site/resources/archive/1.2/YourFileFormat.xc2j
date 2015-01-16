@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FileFormat xmlns="http://cobol2j.sf.net"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://cobol2j.sf.net http://cobol2j.sf.net/FileFormat.xsd"
+		ConversionTBL="net.sf.cobol2j.tables.NO_CONVERSION"
+		distinguishFieldSZ="1" newLineSize="1">
+  <RecordFormat distinguishFieldValue="3">
+    <FieldFormat Decimal="0" Name="RECORD TYPE" Packed="false" Size="1" Type="X"/>
+    <FieldFormat Decimal="2" Name="ADJ. PARTS DOL. CLM." Packed="false"
+      Size="9" Type="9"/>
+    <FieldFormat Decimal="2" Name="NET PARTS DOL. CLM." Packed="false"
+      Size="9" Type="9"/>
+    <FieldFormat Decimal="0" Name="LABOR AMOUNT CLAIMED" Packed="false"
+      Size="7" Type="H"/>
+    <FieldFormat Decimal="0" Name="TRAVEL CLAIMED" Packed="false"
+      Size="7" Type="H"/>
+    <FieldFormat Decimal="0" Name="VEHICULE (KM OR MILES)"
+      Packed="false" Size="7" Type="H"/>
+    <FieldFormat Decimal="0" Name="MISCELLANEOUS CLAIMED" Packed="false"
+      Size="7" Type="H"/>
+    <FieldFormat Decimal="0" Name="FILLER" Packed="false" Size="21" Type="X"/>
+    <FieldFormat Decimal="0" Name="RECORD IDENTIFICATION" Packed="false"
+      Size="4" Type="X"/>
+    <FieldFormat Decimal="0" Name="RECORD IDENTIFICATION" Packed="false"
+      Size="8" Type="X"/>
+  </RecordFormat>
+  <RecordFormat distinguishFieldValue="2">
+    <FieldFormat Decimal="0" Name="RECORD TYPE" Packed="false" Size="1" Type="X"/>
+    <FieldFormat Decimal="2" Name="TOTAL WARRANTY DOLLARS CLAIMED"
+      Packed="false" Size="9" Type="9"/>
+    <FieldFormat Decimal="2" Name="TOTAL WARRANTY ALLOWED"
+      Packed="false" Size="9" Type="9"/>
+    <FieldFormat Decimal="2" Name="WARRANTY DEDUCTION AMOUNT"
+      Packed="false" Size="7" Type="9"/>
+    <FieldFormat Decimal="2" Name="TOTAL WARRANTY INSURANCE"
+      Packed="false" Size="9" Type="9"/>
+    <FieldFormat Decimal="2" Name="CLAIM GRAND TOTAL" Packed="false"
+      Size="9" Type="9"/>
+    <FieldFormat Decimal="6" Name="CURRENCY CONV. RATE" Packed="false"
+      Size="13" Type="9"/>
+    <FieldFormat Decimal="0" Name="CURRENCY CODE" Packed="false"
+      Size="3" Type="X"/>
+    <FieldFormat Decimal="0" Name="DECIMAL POSITIONS" Packed="false"
+      Size="1" Type="X"/>
+    <FieldFormat Decimal="0" Name="FILLER" Packed="false" Size="7" Type="X"/>
+    <FieldFormat Decimal="0" Name="RECORD IDENTIFICATION" Packed="false"
+      Size="4" Type="X"/>
+    <FieldFormat Decimal="0" Name="RECORD IDENTIFICATION" Packed="false"
+      Size="8" Type="X"/>
+  </RecordFormat>
+  <RecordFormat distinguishFieldValue="4">
+    <FieldFormat Decimal="0" Name="RECORD TYPE" Packed="false" Size="1" Type="X"/>
+    <FieldFormat Decimal="2" Name="ADJ. PARTS ALLOWED" Packed="false"
+      Size="9" Type="9"/>
+    <FieldFormat Decimal="2" Name="NET PARTS DOLLARS ALL."
+      Packed="false" Size="9" Type="9"/>
+    <FieldFormat Decimal="0" Name="LABOR AMOUNT ALLOWED" Packed="false"
+      Size="7" Type="H"/>
+    <FieldFormat Decimal="0" Name="TRAVEL ALLOWED" Packed="false"
+      Size="7" Type="H"/>
+    <FieldFormat Decimal="0" Name="VEHICULE (KM OR MILES) ALLOWED"
+      Packed="false" Size="7" Type="H"/>
+    <FieldFormat Decimal="0" Name="MISCELLANEOUS ALLOWED" Packed="false"
+      Size="7" Type="H"/>
+    <FieldFormat Decimal="0" Name="FILLER" Packed="false" Size="21" Type="X"/>
+    <FieldFormat Decimal="0" Name="RECORD IDENTIFICATION" Packed="false"
+      Size="4" Type="X"/>
+    <FieldFormat Decimal="0" Name="RECORD IDENTIFICATION" Packed="false"
+      Size="8" Type="X"/>
+  </RecordFormat>
+  <RecordFormat distinguishFieldValue="1">
+    <FieldFormat Decimal="0" Name="RECORD TYPE" Packed="false" Size="1" Type="X"/>
+    <FieldFormat Decimal="0" Name="CLM. NO. (FACT. WC NO.)"
+      Packed="false" Size="7" Type="X"/>
+    <FieldFormat Decimal="0" Name="WC DATE RECEIVED" Packed="false"
+      Size="6" Type="H"/>
+    <FieldFormat Decimal="0" Name="OPEN, PAID, CANCELLED INDICATOR"
+      Packed="false" Size="1" Type="X"/>
+    <FieldFormat Decimal="0" Name="DEALER CODE" Packed="false" Size="4" Type="X"/>
+    <FieldFormat Decimal="0" Name="DEALER CLAIM NUMBER" Packed="false"
+      Size="8" Type="X"/>
+    <FieldFormat Decimal="0" Name="INITIAL DEALER CODE" Packed="false"
+      Size="4" Type="X"/>
+    <FieldFormat Decimal="0" Name="INITIAL DLR. CLAIM NO."
+      Packed="false" Size="8" Type="X"/>
+    <FieldFormat Decimal="0" Name="SERIAL NUMBER" Packed="false"
+      Size="8" Type="X"/>
+    <FieldFormat Decimal="0" Name="WC SETTLEMENT NOTICE" Packed="false"
+      Size="12" Type="X"/>
+    <FieldFormat Decimal="0" Name="DATE PAID CANCELLED" Packed="false"
+      Size="6" Type="H"/>
+    <FieldFormat Decimal="0" Name="REASON CODES" Packed="false"
+      Size="12" Type="X"/>
+    <FieldFormat Decimal="0" Name="FILLER" Packed="false" Size="3" Type="X"/>
+  </RecordFormat>
+</FileFormat>

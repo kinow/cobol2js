@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="keywords" content="ebcdic, ascii, conversion, as/400, os/390, as400, os390, mainframe, data, file, flat file, baby/36, java, java bean, rpg, cobol, jar, java library, cobol2j, packed decimal, packed field, packed, zoned, legacy, host">
+    </meta>
+    <title>cobol2j project</title>
+    <style type="text/css">
+        <!--
+        p { text-indent: 2cm; }
+        table { border-width: thin; border-style: solid double; border: 1 }
+        code { font-family: Courier New, Courier; font-size: 8pt; margin: 0px; }
+        -->
+    </style>
+  </head>
+  <body>
+  <img src="ebcdic.png" alt="Part of ebcdic file picture."/>
+  
+<br/>
+<a href="http://sourceforge.net/projects/cobol2j">Downloads, feature requests, email, etc. at SF</a>
+<br/>
+Please send your feedback to: p4wciu at users.sourceforge.net<br/><br/>
+<h1>Welcome to cobol2j !</h1>
+
+<p>There are still mainframes, vms and as400s arround us plugged into a power. The aim of the project is to facilitate reading their&nbsp;data files stored in EBCDIC format and give you possibility to do with them what you want.</p>
+<p>cobol2j is a java library written to read original EBCDIC&nbsp;data file which comes from COBOL or RPG system. It also reads files already converted from EBCDIC to ASCII. The advantage of cobol2j is that it reads data types like: numeric fields ( signed and unsigned ), packed decimals, packed date and text fields. Those fields come from ancient 70s times when people saved work and paper. Paper? Yes, data came to 70s-puters on a paper and it was reasonable to pack two digits on one byte in BCD format to save it.</p>
+<p>My first&nbsp;cobol2j application was an programatic interface to another system. Another application was to present some AS/400 data on the web page. cobol2j gives you mainframe data as Java Bean. Then you can create pdf, excel file, generate sql statements to import data to a database or just connect to database with JDBC and push in all you read with cobol2j.</p>
+
+<h2>Usage</h2>
+
+<h3>Things you need to know about your data:</h3>
+<h4>1. Data file encoding - optional if you have already an ASCII file</h4>
+<p>There are many code pages in both EBCDIC and ASCII world and you should know <i>source and destination code pages</i> for your data. This point is optional when you use native EBCDIC to ASCII export facilities ( ones comes with EBCDIC machines ).</p>
+<h4>2. Data structure - mandatory</h4>
+<p>Reading EBCDIC text-only file requires EBCDIC to ASCII conversion tables and knowledge of codepages only. It is relatively easy operation and it is even available on some web pages as online web converters. cobol2j challenge is to read flat data files with record structure ( very often more than one record structure in one file! ) : text, numeric, date, packed decimals, zoned, signed and unsigned fields, etc. This require you to know <i>data structure</i> because such source files are binary files and simple text conversion will not do the job here. The knowledge of data structure is required even if your in-house EBCDIC to ASCII conversion is already done. Simple knowledge of data structure is enought. No need of any special file.</p>
+
+<h3>Two types of input data:</h3>
+<h4>1. original EBCDIC</h4>
+<p>Fresh untuched binary data without conversion errors is very welcome input data for cobol2j. It requires to choose right EBCDIC to ASCII conversion table and to define a data structure.</p>
+<h4>2. ASCII data file</h4>
+<p>You have a file that is already preprocessed with some external tools. There are also environments where cobol or RPG data are processed in ASCII format. Baby/36 is an example. In that case the fist part of the job is already done and the only thing you should need to do is to define the data structure of the file.</p>
+<p>
+       Some data files may have&nbsp;conversion errors. It is quite common that you have a file converted from EBCDIC to ASCII in&nbsp;the&nbsp;way&nbsp;like it was a text file only. cobol2j
+      provides some auto-correction facilities and let you read some bad files with 0%
+      data loss. Here are two cases when input files are in error:
+    </p>
+<h5>Case 1 - wrong code page</h5>
+<p>The file&nbsp;was&nbsp;converted&nbsp;with wrong table. Then it can be read&nbsp;by&nbsp;cobol2j but text fields will have some bad characters.</p>
+<h5>Case 2 - Binary data file converted as it is text file</h5>
+<p>The file&nbsp;was&nbsp;converted&nbsp;as&nbsp;it&nbsp;was&nbsp;text-only&nbsp;file.&nbsp;It&nbsp;still can be read by cobol2j. Text fields will be ok. Non-packed signed and unsigned numeric fields are corrected with automatic failover machanism. Packed decimal and date fields will be corupted. No way to recover original values except you know applied conversion tables. Failover not supported now.</p>
+
+<h3>Fast start example</h3>
+<h4>Prepare to use</h4>
+<h5>EBCDIC to ASCII conversion</h5>
+<p>If your EBCDIC file includes characters that looks like us-ascii or latin-1 characters on original machine then table EBCDIC 037 -> ISO 8859-1 is ready for you. If you use other character set then please donate your conversion table to the project.</p>
+<p>Conversion table is a java class that extends <code>net.sf.cobol2j.AbstractConversionTBL</code> and implements only one method:<br/> <code>public byte convert(byte data);</code></p>
+<h5>Data structure definition</h5>
+<p>Whatever you do with EBCDIC data files you need to know structure. The definition have to be another java class which extends: <code>net.sf.cobol2j.FileFormat</code> class.</p>
+<p>FileFormat class let you define:
+<ol>
+  <li>Conversion table</li>
+  <li>Records and the field size to recognize them. There can be more than one record structure in COBOL or RPG data file.</li>
+  <li>Fields</li>
+  <li>Optional size of record separator ( default is 0 )</li>
+</ol>
+<table border="1">
+    <tr><th>Field Type</th><th>Cobol example</th><th>Java type</th><th>cobol2j field definition</th><th>Remarks</th></tr>
+    <tr><td>Text</td><td>X(11)</td><td>java.lang.String</td><td>X</td><td>just text</td></tr>
+    <tr><td>Numeric ( decimal )</td><td>S9(5)V99 COMP-3</td><td>java.math.BigDecimal</td><td>9</td><td>can be packed or not</td></tr>
+    <tr><td>Date</td><td>9(8)</td><td>java.lang.String</td><td>D</td><td>many&nbsp;possible patterns so parse yourselve to have java.util.Date</td></tr>
+    <tr><td>Binary ( 2's rep. of number )</td><td>9(8) BINARY</td><td>java.math.BigInteger</td><td>B</td><td>simple conversion to BigInteger, no sign and point support yet</td></tr>
+    <tr><td>Hex dump</td><td>any</td><td>java.lang.String</td><td>H</td><td>this let you see data as text hexadecimal dump</td></tr>
+</table>
+</p>
+<h5>Example application</h5>
+
+<div align="left" class="java">
+<table border="2" cellpadding="3" cellspacing="0" bgcolor="#ffffff">
+   <tr>
+   <td nowrap="nowrap" valign="top" align="left">
+    <code>
+<font color="#7f0055"><b>package&nbsp;</b></font><font color="#000000">test;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.io.File;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.io.FileInputStream;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.io.FileNotFoundException;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.io.FileWriter;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.io.IOException;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">net.sf.cobol2j.FileFormat;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">net.sf.cobol2j.FileFormatException;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">net.sf.cobol2j.RecordFormat;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">net.sf.cobol2j.RecordSet;</font><br />
+<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">net.sf.cobol2j.tables.EBCDIC_037_TO_ISO_8859_1;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">CoboDataFilelReaderTest&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;static&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">main</font><font color="#000000">(</font><font color="#000000">String</font><font color="#000000">[]&nbsp;</font><font color="#000000">args</font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">RecordSet&nbsp;ctest&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">RecordSet</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">FileFormat&nbsp;f&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">FileFormat</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">f.setConversionTable</font><font color="#000000">(</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">EBCDIC_037_TO_ISO_8859_1</font><font color="#000000">())</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Only&nbsp;one&nbsp;record&nbsp;structure</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">f.setDistinguishFieldSize</font><font color="#000000">(</font><font color="#990000">0</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">RecordFormat&nbsp;rF&nbsp;=&nbsp;f.addRecordDefinition</font><font color="#000000">(</font><font color="#2a00ff">&#34;0&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Text&nbsp;field</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">rF.addFieldDefinition</font><font color="#000000">(</font><font color="#2a00ff">&#34;blah&nbsp;1&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">'X'</font><font color="#000000">,&nbsp;</font><font color="#990000">8</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">,&nbsp;</font><font color="#7f0055"><b>false</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;6&nbsp;byte&nbsp;long&nbsp;packed&nbsp;decimal</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">rF.addFieldDefinition</font><font color="#000000">(</font><font color="#2a00ff">&#34;blah&nbsp;2&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">'9'</font><font color="#000000">,&nbsp;</font><font color="#990000">13</font><font color="#000000">,&nbsp;</font><font color="#990000">2</font><font color="#000000">,&nbsp;</font><font color="#7f0055"><b>true</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Signed&nbsp;decimal</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">rF.addFieldDefinition</font><font color="#000000">(</font><font color="#2a00ff">&#34;blah&nbsp;3&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">'9'</font><font color="#000000">,&nbsp;</font><font color="#990000">4</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">,&nbsp;</font><font color="#7f0055"><b>false</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">ctest.setFileFormat</font><font color="#000000">(</font><font color="#000000">f</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>try&nbsp;</b></font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">ctest.setInputStream</font><font color="#000000">(</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">FileInputStream</font><font color="#000000">(</font><font color="#2a00ff">&#34;input_file.ebcdic&#34;</font><font color="#000000">))</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">File&nbsp;plik&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">File</font><font color="#000000">(</font><font color="#2a00ff">&#34;NICE_OUTPUT_FILE.TXT&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">FileWriter&nbsp;out&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">FileWriter</font><font color="#000000">(</font><font color="#000000">plik</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>while&nbsp;</b></font><font color="#000000">(</font><font color="#000000">ctest.hasNext</font><font color="#000000">())</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">out.write</font><font color="#000000">(</font><font color="#000000">ctest.getNextRecordAsPlainString</font><font color="#000000">(</font><font color="#2a00ff">&#34;,&nbsp;&#34;</font><font color="#000000">)&nbsp;</font><font color="#000000">+&nbsp;</font><font color="#2a00ff">&#34;\r\n&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">out.close</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}&nbsp;</font><font color="#7f0055"><b>catch&nbsp;</b></font><font color="#000000">(</font><font color="#000000">FileNotFoundException&nbsp;ex</font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">ex.printStackTrace</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}&nbsp;</font><font color="#7f0055"><b>catch&nbsp;</b></font><font color="#000000">(</font><font color="#000000">IOException&nbsp;ex</font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">ex.printStackTrace</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}&nbsp;</font><font color="#7f0055"><b>catch&nbsp;</b></font><font color="#000000">(</font><font color="#000000">FileFormatException&nbsp;ex</font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">ex.printStackTrace</font><font color="#000000">()</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#000000">}</font></code>
+    
+   </td>
+   </tr>
+</table>
+</div>
+
+<h3>Faster Start</h3>
+<p>If you are bored with own programming and want to see immediatly your data you can hex dump it with: </p>
+<p>for unix:</p>
+<code>java -cp commons-logging.jar:cobol2j.jar net.sf.cobol2j.RecordSet EBCDIC|ASCII recLen recSeparatorLen < ebcdic.file > asciiHexDump.file</code>
+<p>for Windows:</p>
+<code>java -cp commons-logging.jar;cobol2j.jar net.sf.cobol2j.RecordSet EBCDIC|ASCII recLen recSeparatorLen < ebcdic.file > asciiHexDump.file</code>
+<p>where commons-logging.jar is from <a href="http://jakarta.apache.org/commons/logging/">Apache Jakarta Commons Logging</a>. recLen is a length of your record and recSeparatorLen should be 0.</p>
+
+<h3>Cobol or RPG data conversion to Excel</h3>
+<p>Now cobol2j has a load and save feature that let you keep file format definition in an xml file. Here is an example file: <a href="YourFileFormat.xc2j">YourFileFormat.xc2j</a>. You need two more libraries to run this example: xercesImpl.jar from <a href="http://xerces.apache.org/xerces2-j/">http://xerces.apache.org/xerces2-j/</a> and poi-2.5.1-final-20040804.jar from <a href="http://jakarta.apache.org/poi/">http://jakarta.apache.org/poi/</a> The command will be:<br/><br/><code>java -cp commons-logging.jar:cobol2j.jar:xercesImpl.jar:poi-2.5.1-final-20040804.jar test.Cobol2ExcelTest2 YourFileFormat.xc2j < cobol.file > sheet.xls</code> </p>
+<div align="left" class="java">
+<table border="0" cellpadding="3" cellspacing="0" bgcolor="#ffffff">
+   <tr>
+   <td nowrap="nowrap" valign="top" align="left">
+    <code>
+    <font color="#7f0055"><b>package&nbsp;</b></font><font color="#000000">test;</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.io.FileInputStream;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.io.FileOutputStream;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.io.IOException;</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.math.BigDecimal;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.math.BigInteger;</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.util.Iterator;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">java.util.List;</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">net.sf.cobol2j.FieldFormat;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">net.sf.cobol2j.FileFormat;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">net.sf.cobol2j.FileFormatException;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">net.sf.cobol2j.RecordFormat;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">net.sf.cobol2j.RecordSet;</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.apache.commons.logging.Log;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.apache.commons.logging.LogFactory;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.apache.poi.hssf.usermodel.HSSFRow;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.apache.poi.hssf.usermodel.HSSFSheet;</font><br />
+    <font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">org.apache.poi.hssf.usermodel.HSSFWorkbook;</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">Cobol2ExcelTest2&nbsp;</font><font color="#000000">{</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;static&nbsp;</b></font><font color="#000000">Log&nbsp;log&nbsp;=&nbsp;LogFactory.getLog</font><font color="#000000">(</font><font color="#000000">Cobol2ExcelTest2.</font><font color="#7f0055"><b>class</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;static&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">main</font><font color="#000000">(</font><font color="#000000">String&nbsp;args</font><font color="#000000">[]){</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">RecordSet&nbsp;records&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">RecordSet</font><font color="#000000">()</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">FileFormat&nbsp;f&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">FileFormat</font><font color="#000000">()</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">records.setFileFormat</font><font color="#000000">(</font><font color="#000000">f</font><font color="#000000">)</font><font color="#000000">;</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">rowNr&nbsp;=&nbsp;-</font><font color="#990000">1</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">String&nbsp;first&nbsp;=&nbsp;</font><font color="#2a00ff">&#34;#Â¤%&amp;/()=()/(&amp;%)&#34;</font><font color="#000000">;</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">HSSFWorkbook&nbsp;wb&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">HSSFWorkbook</font><font color="#000000">()</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">HSSFSheet&nbsp;sheet&nbsp;=&nbsp;wb.createSheet</font><font color="#000000">(</font><font color="#2a00ff">&#34;C2J&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">HSSFRow&nbsp;xl_row;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>try</b></font><font color="#000000">{</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">f.load</font><font color="#000000">(&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">FileInputStream</font><font color="#000000">(&nbsp;</font><font color="#000000">args</font><font color="#000000">[</font><font color="#990000">0</font><font color="#000000">]&nbsp;)&nbsp;)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">records.setInputStream</font><font color="#000000">(&nbsp;</font><font color="#000000">System.in&nbsp;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>while</b></font><font color="#000000">(&nbsp;</font><font color="#000000">records.hasNext</font><font color="#000000">()&nbsp;){</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">List&nbsp;fields&nbsp;=&nbsp;records.next</font><font color="#000000">()</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">String&nbsp;first1&nbsp;=&nbsp;fields.get</font><font color="#000000">(</font><font color="#990000">0</font><font color="#000000">)</font><font color="#000000">.toString</font><font color="#000000">()</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">RecordFormat&nbsp;rF&nbsp;=&nbsp;</font><font color="#000000">(&nbsp;</font><font color="#000000">RecordFormat&nbsp;</font><font color="#000000">)</font><font color="#000000">f.getRecordsDefinitions</font><font color="#000000">()</font><font color="#000000">.get</font><font color="#000000">(</font><font color="#000000">first1</font><font color="#000000">)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if</b></font><font color="#000000">(&nbsp;</font><font color="#000000">!first.equals</font><font color="#000000">(&nbsp;</font><font color="#000000">first1&nbsp;</font><font color="#000000">)&nbsp;){</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//&nbsp;Print&nbsp;header&nbsp;for&nbsp;another&nbsp;record&nbsp;structure</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">rowNr++;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">xl_row&nbsp;=&nbsp;sheet.createRow</font><font color="#000000">((</font><font color="#7f0055"><b>short</b></font><font color="#000000">)&nbsp;</font><font color="#000000">rowNr</font><font color="#000000">)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">Iterator&nbsp;fFs&nbsp;=&nbsp;rF.getFields</font><font color="#000000">()</font><font color="#000000">.iterator</font><font color="#000000">()</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">cellNr&nbsp;=&nbsp;-</font><font color="#990000">1</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>while</b></font><font color="#000000">(&nbsp;</font><font color="#000000">fFs.hasNext</font><font color="#000000">()&nbsp;){</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">FieldFormat&nbsp;ff&nbsp;=&nbsp;</font><font color="#000000">(&nbsp;</font><font color="#000000">FieldFormat&nbsp;</font><font color="#000000">)</font><font color="#000000">fFs.next</font><font color="#000000">()</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cellNr++;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">xl_row.createCell</font><font color="#000000">((</font><font color="#7f0055"><b>short</b></font><font color="#000000">)</font><font color="#000000">cellNr</font><font color="#000000">)</font><font color="#000000">.setCellValue</font><font color="#000000">(&nbsp;</font><font color="#000000">ff.getName</font><font color="#000000">()&nbsp;)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+    <font color="#ffffff"></font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">rowNr++;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">xl_row&nbsp;=&nbsp;sheet.createRow</font><font color="#000000">(&nbsp;(</font><font color="#7f0055"><b>short</b></font><font color="#000000">)&nbsp;</font><font color="#000000">rowNr&nbsp;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">Iterator&nbsp;fs&nbsp;=&nbsp;fields.iterator</font><font color="#000000">()</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">cellNr&nbsp;=&nbsp;-</font><font color="#990000">1</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>while</b></font><font color="#000000">(&nbsp;</font><font color="#000000">fs.hasNext</font><font color="#000000">()&nbsp;){</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cellNr++;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">Object&nbsp;o&nbsp;=&nbsp;fs.next</font><font color="#000000">()</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(&nbsp;</font><font color="#000000">o&nbsp;</font><font color="#7f0055"><b>instanceof&nbsp;</b></font><font color="#000000">BigDecimal&nbsp;</font><font color="#000000">)</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">xl_row.createCell</font><font color="#000000">((</font><font color="#7f0055"><b>short</b></font><font color="#000000">)</font><font color="#000000">cellNr</font><font color="#000000">)</font><font color="#000000">.setCellValue</font><font color="#000000">(&nbsp;((</font><font color="#000000">BigDecimal</font><font color="#000000">)</font><font color="#000000">o</font><font color="#000000">)</font><font color="#000000">.doubleValue</font><font color="#000000">()&nbsp;)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>else&nbsp;if&nbsp;</b></font><font color="#000000">(&nbsp;</font><font color="#000000">o&nbsp;</font><font color="#7f0055"><b>instanceof&nbsp;</b></font><font color="#000000">BigInteger&nbsp;</font><font color="#000000">)</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">xl_row.createCell</font><font color="#000000">((</font><font color="#7f0055"><b>short</b></font><font color="#000000">)</font><font color="#000000">cellNr</font><font color="#000000">)</font><font color="#000000">.setCellValue</font><font color="#000000">(&nbsp;((</font><font color="#000000">BigInteger</font><font color="#000000">)</font><font color="#000000">o</font><font color="#000000">)</font><font color="#000000">.intValue</font><font color="#000000">()&nbsp;)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>else&nbsp;if&nbsp;</b></font><font color="#000000">(&nbsp;</font><font color="#000000">o&nbsp;</font><font color="#7f0055"><b>instanceof&nbsp;</b></font><font color="#000000">String&nbsp;</font><font color="#000000">)</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">xl_row.createCell</font><font color="#000000">((</font><font color="#7f0055"><b>short</b></font><font color="#000000">)</font><font color="#000000">cellNr</font><font color="#000000">)</font><font color="#000000">.setCellValue</font><font color="#000000">(&nbsp;</font><font color="#000000">o.toString</font><font color="#000000">()&nbsp;)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>else</b></font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">log.error</font><font color="#000000">(</font><font color="#2a00ff">&#34;wassssssup!?&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">wb.write</font><font color="#000000">(</font><font color="#000000">System.out</font><font color="#000000">)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>catch</b></font><font color="#000000">(</font><font color="#000000">IOException&nbsp;ex</font><font color="#000000">){</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">log.error</font><font color="#000000">(&nbsp;</font><font color="#000000">ex.getMessage</font><font color="#000000">()&nbsp;)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>catch</b></font><font color="#000000">(</font><font color="#000000">FileFormatException&nbsp;ex</font><font color="#000000">){</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">log.error</font><font color="#000000">(&nbsp;</font><font color="#000000">ex.getMessage</font><font color="#000000">()&nbsp;)</font><font color="#000000">;</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+    <font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+    <font color="#000000">}</font></code>
+   </td>
+   </tr>
+</table>
+</div>
+
+<h3>"OCCURS ... DEPENDING ON" - variable record length.</h3>
+<p>cobol2j supports "OCCURS" and "DEPENDING ON" since release 1.2. The file structure definition has been extended to support it in both xml file and programatically. RecordFormat and FieldsGroup both are derived from FieldsList which has a possibility to add both FieldFormat and FieldsGroup. The last can be added recursively. See xml schema drawing. Boxes represent tags structure with attributes. You can also use <a href="FileFormat.xsd">FileFormat.xsd</a></p>
+<img src="schema.png" alt="FileFormat.xsd schema drawing"/>
+
+<h3>Troubleshooting</h3>
+<p>cobol2j was tested and is used to process series of files from mainframe and from AS/400 in production environment but it is too few tests to avoid problems with field decryption.</p>
+<p>When you have exceptions while processing then the fastest way to go is define questionable fields as hex. Then you can analyse field content and choose the right field type.</p>
+<p>I am aware of that one or two field types need better implementation. Especially with external signs or even signed binary type.</p>
+<p>If you have fields that are not decoded properly with cobol2j then please send me your example data then I will implement it.</p>
+
+  <center><a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=156330&amp;type=1" 
+width="88" height="31" border="0" alt="SourceForge.net Logo" /></a></center>
+  </body>
+</html>

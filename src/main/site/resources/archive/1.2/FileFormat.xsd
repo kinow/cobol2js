@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://cobol2j.sf.net"
+            targetNamespace="http://cobol2j.sf.net"
+            elementFormDefault="qualified">
+  <xsd:element name="FileFormat">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="RecordFormat">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="FieldFormat" type="FieldFormatType"/>
+              <xsd:element name="FieldsGroup" type="FieldsGroupType"/>
+            </xsd:sequence>
+            <xsd:attribute name="distinguishFieldValue"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="ConversionTBL"/>
+      <xsd:attribute name="distinguishFieldSZ"/>
+      <xsd:attribute name="newLineSize"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="FieldsGroupType">
+    <xsd:sequence>
+      <xsd:element name="FieldFormat" type="FieldFormatType"/>
+      <xsd:element name="FieldsGroup" type="FieldsGroupType"/>
+    </xsd:sequence>
+    <xsd:attribute name="Name"/>
+    <xsd:attribute name="Occurs"/>
+    <xsd:attribute name="DependingOn"/>
+  </xsd:complexType>
+  <xsd:complexType name="FieldFormatType">
+    <xsd:attribute name="Decimal" type="xsd:positiveInteger"/>
+    <xsd:attribute name="DependingOn"/>
+    <xsd:attribute name="Name"/>
+    <xsd:attribute name="Occurs"/>
+    <xsd:attribute name="Packed"/>
+    <xsd:attribute name="Size"/>
+    <xsd:attribute name="Type"/>
+  </xsd:complexType>
+</xsd:schema>

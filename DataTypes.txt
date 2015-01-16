@@ -1,0 +1,41 @@
+Character ( alpha-numeric )
+- general representation
+require or not a conversion from EBCDIC or ASCII depending on a platform ( Mainframe or PC )
+
+Zoned decimal ( Signed )
+- general representation
+- signed/unsigned
+Platform dependednt:
+	IBM - C+ D- Funsigned ored with LSB
+	CA Realia - 0x30+ 0x20- 
+	MF & MS - 0x30+ 0x70-
+PROBLEM: "sign is separate"
+- implied decimal
+
+comp-3 ( packed decimal )
+- general representation
+Not dependent upon the operating system, language, or CPU, as the COBOL "comp" is.
+If the size of the field is specified as an even number of digits, as in "PIC S9(6) comp-3.",
+ the upper nybble is ignored and is usually, but not always, set to zero.
+PROBLEM: fill rest of bytes with zeros or something else?
+- signed/unsigned
+last nibble = "C" hex is positive, "D" hex is negative, and "F" hex is unsigned
+PROBLEM: some other sign "values" in others impl.?
+- implied decimal
+Implied decimal can apply to any kind of numeric field, including a binary, packed, or comp-3 field.
+PROBLEM: how to convert point in case it is not implied? shall we ebcdic it?
+
+Binary
+The COBOL standard specifies that this should be a binary data type, but the exact implementation is up to the vendor. 
+PROBLEM: no implementation docs, no sample data at all
+
+Comp (with no suffix)
+Leaves the choice of the data type to the compiler writer.  The intent of this data type is to make it the most efficient format on any given machine, which is usually some binary format. Because of this, comp varies greatly between platforms, more than most other types.
+PROBLEM: same as Binary
+
+Comp-1
+Comp-1 is usually a single precision floating point value, stored in 4 bytes.  Many vendors follow the IEEE floating point standard, but IBM does not.
+
+Comp-2
+Comp-2 is usually a double precision floating point value, stored in 8 bytes.  Many vendors follow the IEEE standard, but IBM does not.
+
